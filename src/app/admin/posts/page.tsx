@@ -15,10 +15,15 @@ export default async function AdminPostsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">記事一覧</h1>
-        <Link href="/admin/posts/new">
-          <Button>新規作成</Button>
-        </Link>
+        <h1 className="text-2xl font-bold">記事管理</h1>
+        <div className="space-x-2">
+          <Link href="/admin/posts/new">
+            <Button>新規作成</Button>
+          </Link>
+          <Link href="/">
+            <Button variant="outline">サイトに戻る</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">

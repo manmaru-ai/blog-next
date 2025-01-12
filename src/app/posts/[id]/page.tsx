@@ -3,9 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
 type PageProps = {
-  params: {
-    id: string
-  }
+  params: { id: string }
 }
 
 async function getPost(id: string) {
@@ -19,13 +17,8 @@ async function getPost(id: string) {
   return res.json()
 }
 
-export default async function PostPage({
-  params,
-}: {
-  params: { id: string }
-}) {
-  const { id } = params
-  const post = await getPost(id)
+export default async function PostPage(context: PageProps) {
+  const post = await getPost(context.params.id)
 
   if (!post) {
     notFound()

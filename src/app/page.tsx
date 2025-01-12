@@ -22,17 +22,36 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">ブログ記事一覧</h1>
-        <div className="space-x-2">
-          <Link href="/admin/posts">
-            <Button variant="outline">記事管理</Button>
-          </Link>
-          <Link href="/admin/categories">
-            <Button variant="outline">カテゴリー管理</Button>
-          </Link>
+      {/* ヘッダーナビゲーション */}
+      <header className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-bold">ブログ</h1>
+          <nav className="space-x-2">
+            <Link href="/about">
+              <Button variant="ghost">About</Button>
+            </Link>
+          </nav>
         </div>
-      </div>
+        
+        {/* 管理者メニュー */}
+        <div className="bg-gray-50 rounded-lg p-4 mb-8">
+          <h2 className="text-sm font-semibold text-gray-600 mb-2">管理者メニュー</h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/posts">
+              <Button variant="outline" size="sm">記事管理</Button>
+            </Link>
+            <Link href="/admin/posts/new">
+              <Button variant="outline" size="sm">記事作成</Button>
+            </Link>
+            <Link href="/admin/categories">
+              <Button variant="outline" size="sm">カテゴリー管理</Button>
+            </Link>
+            <Link href="/admin/categories/new">
+              <Button variant="outline" size="sm">カテゴリー作成</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
       <div className="flex gap-8">
         {/* メインコンテンツ */}
@@ -82,6 +101,14 @@ export default async function Home() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4">カテゴリー</h2>
             <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/"
+                  className="text-gray-700 hover:text-blue-600"
+                >
+                  全て
+                </Link>
+              </li>
               {categories.map((category: any) => (
                 <li key={category.id}>
                   <Link

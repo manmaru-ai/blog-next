@@ -3,51 +3,65 @@ import { NextResponse } from 'next/server'
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { title, content, categoryId, published } = await request.json()
-    const id = parseInt(params.id)
+    const { title, content, coverImageURL, categoryIds } = await request.json()
 
-    if (!title || !content || !categoryId) {
+    if (!title || !content || !coverImageURL || !categoryIds || !categoryIds.length) {
       return NextResponse.json(
-        { error: 'Title, content and categoryId are required' },
+        { error: 'Required fields are missing' },
         { status: 400 }
       )
     }
 
     const post = await prisma.post.update({
-      where: { id },
+      where: { id: context.params.id },
       data: {
         title,
         content,
-        categoryId: parseInt(categoryId),
-        published: published ?? false
+        coverImageURL,
+        categories: {
+          deleteMany: {},
+          create: categoryIds.map((categoryId: string) => ({
+            categoryId
+          }))
+        }
       },
       include: {
-        category: true
+        categories: {
+          include: {
+            category: true
+          }
+        }
       }
     })
 
     return NextResponse.json(post)
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    console.error('Post update error:', error)
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    )
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id)
-
     await prisma.post.delete({
-      where: { id }
+      where: { id: context.params.id }
     })
 
     return NextResponse.json({ message: 'Post deleted successfully' })
   } catch (error) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    console.error('Post deletion error:', error)
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    )
   }
 } 
