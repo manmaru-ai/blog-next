@@ -1,74 +1,68 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { GitHubLogoIcon } from '@radix-ui/react-icons'
 
 export default function AboutPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <Link href="/">
-            <Button variant="ghost">← トップページに戻る</Button>
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          {/* プロフィールセクション */}
+          <section className="text-center mb-12">
+            <div className="mb-6">
+              <Image
+                src="/icon.png"
+                alt="manmaru"
+                width={120}
+                height={120}
+                className="rounded-full mx-auto"
+              />
+            </div>
+            <h1 className="text-3xl font-bold mb-2">manmaru</h1>
+            <p className="text-gray-600 mb-4">高専生 / プログラマー</p>
+            <Link href="https://github.com/manmaru-ai" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="gap-2">
+                <GitHubLogoIcon className="w-4 h-4" />
+                GitHub
+              </Button>
+            </Link>
+          </section>
 
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold mb-8">このサイトについて</h1>
-          
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-4">サイトの目的</h2>
-            <p className="text-gray-700 mb-4">
-              このブログサイトは、Next.js、Prisma、TypeScriptを使用して構築された
-              モダンなウェブアプリケーションです。
+          {/* プロフィール詳細 */}
+          <section className="prose prose-lg max-w-none">
+            <h2 className="text-2xl font-bold mb-4">PROFILE</h2>
+            <p>
+              私は大阪公立大学工業高等専門学校の知能情報コースに所属する高専生です。プログラミングと新しい技術の探求に情熱を持って取り組んでいます。
             </p>
-            <p className="text-gray-700 mb-4">
-              記事の管理、カテゴリ分類、画像表示などの基本的なブログ機能を
-              実装しています。
+            <p>
+              特にAI技術に強い関心を持っており、Discord botの開発やWeb開発など、様々なプロジェクトに挑戦しています。
+            </p>
+            <p>
+              常に新しい技術を学び、実践的なプロジェクトを通じて成長することを心がけています。現在は、AI技術とWeb開発の融合に特に注目しています。
             </p>
           </section>
 
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-4">使用技術</h2>
-            <ul className="list-disc list-inside text-gray-700 space-y-2">
-              <li>Next.js 14 (App Router)</li>
-              <li>TypeScript</li>
-              <li>Prisma (ORM)</li>
-              <li>SQLite</li>
-              <li>Tailwind CSS</li>
-              <li>shadcn/ui</li>
+          {/* このサイトについて */}
+          <section className="prose prose-lg max-w-none mt-12">
+            <h2 className="text-2xl font-bold mb-4">このサイトについて</h2>
+            <p>
+              このブログは、Next.js 15のApp Routerを使用して開発された個人ブログです。
+              モダンなWeb技術を活用し、高速で使いやすいブログシステムを目指しています。
+            </p>
+            <p>
+              主な特徴：
+            </p>
+            <ul>
+              <li>Next.js 15 App Router採用による最新のアーキテクチャ</li>
+              <li>Tailwind CSSを用いたレスポンシブデザイン</li>
+              <li>Prismaによるタイプセーフなデータベース操作</li>
+              <li>リッチテキストエディタによる快適な記事作成体験</li>
+              <li>画像アップロード機能</li>
             </ul>
           </section>
-
-          <section>
-            <h2 className="text-2xl font-bold mb-4">制作者プロフィール</h2>
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-2">開発者</h3>
-              <p className="text-gray-700 mb-4">
-                Web開発に情熱を持つエンジニアです。
-                モダンな技術スタックを使用して、
-                使いやすく保守性の高いアプリケーションの開発を心がけています。
-              </p>
-              <div className="flex space-x-4">
-                <a
-                  href="https://github.com/yourusername"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://twitter.com/yourusername"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  Twitter
-                </a>
-              </div>
-            </div>
-          </section>
         </div>
-      </div>
+      </main>
     </div>
   )
 } 
