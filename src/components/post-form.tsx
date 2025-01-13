@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 interface Category {
   id: string
@@ -28,12 +29,43 @@ interface PostFormProps {
 export default function PostForm({ categories, initialData }: PostFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     content: initialData?.content || '',
     coverImageURL: initialData?.coverImageURL || '',
     categoryIds: initialData?.categories?.map(c => c.categoryId) || []
   })
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return
+
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('file', file)
+
+    setIsUploading(true)
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'アップロードに失敗しました')
+      }
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, coverImageURL: data.url }))
+      toast.success('画像をアップロードしました')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '予期せぬエラーが発生しました')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -83,16 +115,26 @@ export default function PostForm({ categories, initialData }: PostFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="coverImageURL">カバー画像URL</Label>
-        <Input
-          id="coverImageURL"
-          value={formData.coverImageURL}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
-            setFormData({ ...formData, coverImageURL: e.target.value })
-          }
-          placeholder="画像のURLを入力"
-          required
-        />
+        <Label htmlFor="coverImage">カバー画像</Label>
+        <div className="space-y-4">
+          <Input
+            id="coverImage"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={isUploading}
+          />
+          {formData.coverImageURL && (
+            <div className="relative aspect-video w-full max-w-xl overflow-hidden rounded-lg border">
+              <Image
+                src={formData.coverImageURL}
+                alt="カバー画像プレビュー"
+                fill
+                className="object-cover"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -135,7 +177,7 @@ export default function PostForm({ categories, initialData }: PostFormProps) {
         >
           キャンセル
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || isUploading}>
           {isSubmitting ? '保存中...' : (initialData?.id ? '更新' : '作成')}
         </Button>
       </div>
