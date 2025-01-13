@@ -3,11 +3,19 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
+    if (!resolvedParams?.id) {
+      return NextResponse.json(
+        { error: 'ID is required' },
+        { status: 400 }
+      )
+    }
+
     const post = await prisma.post.findUnique({
-      where: { id: context.params.id },
+      where: { id: resolvedParams.id },
       include: {
         categories: {
           include: {

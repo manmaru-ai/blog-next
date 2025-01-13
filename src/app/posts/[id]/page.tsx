@@ -17,8 +17,12 @@ async function getPost(id: string) {
   return res.json()
 }
 
-export default async function PostPage(context: PageProps) {
-  const post = await getPost(context.params.id)
+export default async function PostPage({
+  params,
+}: PageProps) {
+  const resolvedParams = await params
+  const { id } = resolvedParams
+  const post = await getPost(id)
 
   if (!post) {
     notFound()
