@@ -1,3 +1,5 @@
+'use client'
+
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
@@ -5,6 +7,7 @@ import Image from '@tiptap/extension-image'
 import CodeBlock from '@tiptap/extension-code-block'
 import Placeholder from '@tiptap/extension-placeholder'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import {
   Bold,
   Italic,
@@ -54,6 +57,47 @@ export function RichTextEditor({
 
   if (!editor) {
     return null
+  }
+
+  const handleImageUpload = async () => {
+    // ファイル選択ダイアログを作成
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+
+    input.onchange = async () => {
+      const file = input.files?.[0]
+      if (!file) return
+
+      try {
+        // FormDataを作成
+        const formData = new FormData()
+        formData.append('file', file)
+
+        // アップロードAPIを呼び出し
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'アップロードに失敗しました')
+        }
+
+        const data = await response.json()
+        
+        // エディタに画像を挿入
+        editor.chain().focus().setImage({ src: data.url }).run()
+        toast.success('画像をアップロードしました')
+      } catch (error) {
+        console.error('Error uploading image:', error)
+        toast.error(error instanceof Error ? error.message : '画像のアップロードに失敗しました')
+      }
+    }
+
+    // ファイル選択ダイアログを表示
+    input.click()
   }
 
   return (
@@ -123,12 +167,8 @@ export function RichTextEditor({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => {
-            const url = window.prompt('画像のURLを入力してください:')
-            if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
-            }
-          }}
+          onClick={handleImageUpload}
+          title="画像をアップロード"
         >
           <ImageIcon className="h-4 w-4" />
         </Button>
