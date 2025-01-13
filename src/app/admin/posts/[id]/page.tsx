@@ -36,9 +36,9 @@ async function getCategories() {
 
 export default async function EditPostPage({ params }: { params: { id: string } }) {
   try {
-    const id = params.id
+    const resolvedParams = await params
     const [post, categories] = await Promise.all([
-      getPost(id),
+      getPost(resolvedParams.id),
       getCategories()
     ])
 

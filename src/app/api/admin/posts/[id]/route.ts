@@ -6,9 +6,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     const post = await prisma.post.findUnique({
       where: {
-        id: params.id
+        id: resolvedParams.id
       },
       include: {
         categories: {
@@ -41,6 +42,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     const data = await request.json()
     const { title, content, coverImageURL, categoryIds } = data
 
@@ -64,14 +66,14 @@ export async function PUT(
     // 既存のカテゴリー関連を削除
     await prisma.postCategory.deleteMany({
       where: {
-        postId: params.id
+        postId: resolvedParams.id
       }
     })
 
     // 記事を更新
     const post = await prisma.post.update({
       where: {
-        id: params.id
+        id: resolvedParams.id
       },
       data: {
         title,
@@ -107,17 +109,18 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     // 関連するカテゴリーを先に削除
     await prisma.postCategory.deleteMany({
       where: {
-        postId: params.id
+        postId: resolvedParams.id
       }
     })
 
     // 記事を削除
     const post = await prisma.post.delete({
       where: {
-        id: params.id
+        id: resolvedParams.id
       }
     })
 
