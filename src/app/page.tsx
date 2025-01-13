@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { CalendarIcon, Clock3Icon } from 'lucide-react'
 
 async function getPosts() {
-  const res = await fetch(`http://localhost:3000/api/posts`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts`, {
     cache: 'no-store'
   })
   if (!res.ok) throw new Error('Failed to fetch posts')
@@ -13,7 +13,7 @@ async function getPosts() {
 }
 
 async function getCategories() {
-  const res = await fetch(`http://localhost:3000/api/categories`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/categories`, {
     cache: 'no-store'
   })
   if (!res.ok) throw new Error('Failed to fetch categories')
@@ -25,29 +25,8 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* ヘッダー */}
-      <header className="border-b bg-white/50 backdrop-blur-sm fixed top-0 w-full z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Tech Blog
-              </h1>
-            </Link>
-            <nav className="flex items-center space-x-4">
-              <Link href="/about">
-                <Button variant="ghost">About</Button>
-              </Link>
-              <Link href="/admin/posts">
-                <Button variant="outline" size="sm">管理画面</Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* メインコンテンツ */}
-      <main className="container mx-auto px-4 pt-24 pb-12">
+      <main className="container mx-auto px-4 py-8">
         {/* カテゴリーリスト */}
         <div className="mb-8 flex flex-wrap gap-2">
           {categories.map((category: any) => (

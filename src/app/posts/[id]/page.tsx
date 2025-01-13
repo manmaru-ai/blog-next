@@ -1,98 +1,74 @@
-import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CalendarIcon, ArrowLeftIcon } from '@radix-ui/react-icons'
-import { cn } from '@/lib/utils'
-import { Separator } from '@/components/ui/separator'
-
-type PageProps = {
-  params: { id: string }
-}
+import { CalendarIcon } from 'lucide-react'
+import { notFound } from 'next/navigation'
 
 async function getPost(id: string) {
-  const res = await fetch(`http://localhost:3000/api/posts/${id}`, {
-    cache: 'no-store'
-  })
-  if (!res.ok) {
-    if (res.status === 404) return null
-    throw new Error('Failed to fetch post')
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts/${id}`, {
+      cache: 'no-store'
+    })
+    if (!res.ok) {
+      if (res.status === 404) return null
+      throw new Error('Failed to fetch post')
+    }
+    return res.json()
+  } catch (error) {
+    console.error('Error fetching post:', error)
+    throw error
   }
-  return res.json()
 }
 
-export default async function PostPage({
-  params,
-}: PageProps) {
-  const resolvedParams = await params
-  const { id } = resolvedParams
-  const post = await getPost(id)
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id)
 
   if (!post) {
     notFound()
   }
 
   return (
-    <main className="container max-w-4xl mx-auto px-4 py-12">
-      <div className="space-y-8">
-        <div className="flex items-center space-x-4">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="group transition-all">
-              <ArrowLeftIcon className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-              記事一覧に戻る
-            </Button>
-          </Link>
-        </div>
-
-        <Card className="overflow-hidden border-none shadow-lg">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* 記事コンテンツ */}
+      <main className="container mx-auto px-4 py-8">
+        <article className="max-w-4xl mx-auto">
+          {/* カバー画像 */}
           {post.coverImageURL && (
-            <div className="relative w-full h-[400px] overflow-hidden">
+            <div className="aspect-video relative overflow-hidden rounded-lg mb-8">
               <img
                 src={post.coverImageURL}
                 alt={post.title}
-                className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
+                className="object-cover w-full h-full"
               />
             </div>
           )}
-          
-          <CardHeader className="space-y-6 pt-8">
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {post.categories.map((pc: any, index: number) => (
-                  <Badge key={index} variant="secondary" className="text-sm">
+
+          {/* 記事ヘッダー */}
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+            <div className="flex items-center gap-4 text-gray-600">
+              <div className="flex items-center gap-1">
+                <CalendarIcon className="w-4 h-4" />
+                <time>{new Date(post.createdAt).toLocaleDateString('ja-JP')}</time>
+              </div>
+              <div className="flex gap-2">
+                {post.categories.map((pc: any) => (
+                  <Badge key={pc.category.id} variant="secondary">
                     {pc.category.name}
                   </Badge>
                 ))}
               </div>
-              <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
-                {post.title}
-              </h1>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                <time dateTime={post.createdAt}>
-                  {new Date(post.createdAt).toLocaleDateString('ja-JP', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
-              </div>
             </div>
-          </CardHeader>
+          </div>
 
-          <CardContent className="pt-6">
-            <Separator className="my-8" />
-            <div className="prose prose-lg max-w-none dark:prose-invert">
-              {post.content.split('\n').map((paragraph: string, index: number) => (
-                <p key={index} className="leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+          {/* 記事本文 */}
+          <div 
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-lg prose-pre:bg-gray-100"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+        </article>
+      </main>
+    </div>
   )
 } 
