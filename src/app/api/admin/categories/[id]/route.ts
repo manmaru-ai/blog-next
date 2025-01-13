@@ -6,9 +6,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     const category = await prisma.category.delete({
       where: {
-        id: params.id
+        id: resolvedParams.id
       }
     })
 
@@ -27,6 +28,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const resolvedParams = await params
     const data = await request.json()
     const { name } = data
 
@@ -39,7 +41,7 @@ export async function PUT(
 
     const category = await prisma.category.update({
       where: {
-        id: params.id
+        id: resolvedParams.id
       },
       data: { name }
     })

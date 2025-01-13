@@ -22,7 +22,7 @@ async function getPost(id: string) {
 }
 
 export default async function PostPage({ params }: { params: { id: string } }) {
-  const resolvedParams = await params;
+  const resolvedParams = await params
   const post = await getPost(resolvedParams.id)
 
   if (!post) {
